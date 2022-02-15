@@ -1,14 +1,17 @@
-from services import root_dir, nice_json
-from flask import Flask
+from flask import Flask, make_response
 import json
 from werkzeug.exceptions import NotFound
 
 
 app = Flask(__name__)
 
-with open("{}/database/beers.json".format(root_dir()), "r") as f:
+with open("beers.json", "r") as f:
     beers = json.load(f)
 
+def nice_json(arg):
+    response = make_response(json.dumps(arg, sort_keys = True, indent=4))
+    response.headers['Content-type'] = "application/json"
+    return response
 
 @app.route("/", methods=['GET'])
 def hello():

@@ -1,13 +1,17 @@
-from services import root_dir, nice_json
-from flask import Flask
+from flask import Flask, make_response
 import json
 from werkzeug.exceptions import NotFound
 
 
 app = Flask(__name__)
 
-with open("{}/database/sales.json".format(root_dir()), "r") as f:
+with open("sales.json", "r") as f:
     sales = json.load(f)
+
+def nice_json(arg):
+    response = make_response(json.dumps(arg, sort_keys = True, indent=4))
+    response.headers['Content-type'] = "application/json"
+    return response
 
 @app.route("/", methods=['GET'])
 def hello():
@@ -21,12 +25,12 @@ def hello():
 
 
 @app.route("/sales", methods=['GET'])
-def beer_list():
+def sales_list():
     return nice_json(sales)
 
 
 @app.route("/sales/<name>", methods=['GET'])
-def beer_record(name):
+def sales_record(name):
     if name not in sales:
         raise NotFound
 
