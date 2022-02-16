@@ -11,12 +11,13 @@ install: clean venv
 	. venv/bin/activate; python setup.py install
 	. venv/bin/activate; python setup.py develop
 
-launch: venv shutdown
-	. venv/bin/activate; python -m services.warehouse.warehouse &
-	. venv/bin/activate; python -m services.sales.sales &
-	. venv/bin/activate; python -m services.accounting.accounting &
+launch: shutdown
+	docker-compose up --build -d
 
 shutdown:
-	ps -ef | grep "services.warehouse.warehouse" | grep -v grep | awk '{print $$2}' | xargs kill  
-	ps -ef | grep "services.sales.sales" | grep -v grep | awk '{print $$2}' | xargs kill  
-	ps -ef | grep "services.accounting.accounting" | grep -v grep | awk '{print $$2}' | xargs kill  
+	docker-compose down
+
+test: clean venv
+	. venv/bin/activate; python test/accounting.test.py
+	. venv/bin/activate; python test/sales.test.py
+	. venv/bin/activate; python test/warehouse.test.py
